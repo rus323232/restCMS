@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "outDir": "bin",
+        "rootDir": "src",
+        "sourceMap": true,
+        "target": "es3",
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitUseStrict": true,
+        "strictNullChecks": true
+    }
+}

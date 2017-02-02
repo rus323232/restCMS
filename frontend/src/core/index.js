@@ -1,30 +1,35 @@
 //require func for async modules load
 function require(name, modulesPath) {
-    var code,
-        module,
-        exports,
-        pattern = /(?:\.([^.]+))?$/;
+        var code,
+            module,
+            exports,
+            pattern = /(?:\.([^.]+))?$/;
 
-    if (pattern.exec(name)[1] !== 'js') {
-        name = name + '.js';
-    }
+        if (pattern.exec(name)[1] !== 'js') {
+            name = name + '.js';
+        }
 
-    if (name in require.cache) {
-        return require.cache[name];
-    }
+        if (name in require.cache) {
+            return require.cache[name];
+        }
+        try {
+            var xmlRequest = new XMLHttpRequest();
+            xmlRequest.open('GET', (modulesPath + name), false);
+            xmlRequest.send(null);
 
-    var xmlRequest = new XMLHttpRequest();
-    xmlRequest.open('GET', (modulesPath + name), false);
-    xmlRequest.send(null);
-
-    if (xmlRequest.status === 200) {
-        code =  new Function("exports, module", xmlRequest.responseText);
-        exports = {};
-        module = { exports: exports };
-        code(exports, module);
-        require.cache[name] = module.exports;
-        return module.exports;
-    }
+            if (xmlRequest.status === 200) {
+                code =  new Function("exports, module", xmlRequest.responseText);
+                exports = {};
+                module = { exports: exports };
+                code(exports, module);
+                require.cache[name] = module.exports;
+                return module.exports;
+            }
+        }
+        catch (e) {
+            console.log('Requires object does not exist: require func'+ e);
+        }
+    
 }
 
 require.cache = Object.create(null);
@@ -79,7 +84,7 @@ var publisher = {
 }
 
 
-var dataSet = publisher;
+var eventsEmitter = publisher;
 
 //core initialization 
 var core = {
@@ -107,7 +112,7 @@ var core = {
 window.onload = function () {
     //first load core init
     core.init('src/configurations/core.json');
-    dataSet.on('loadDefaultModules', function (modulesList) {
+    eventsEmitter.on('loadDefaultModules', function (modulesList) {
         if (typeof(modulesList)!= 'object') {
             modulesList = {};
             console.log('Modules list is not array');
@@ -115,9 +120,35 @@ window.onload = function () {
         console.log(typeof(modulesList));
         var dir = core.config.modulesDir, i, max = modulesList.length;
         for (i = 0; i<max; i++) {
-           require (modulesList[i], core.config.modulesDir);
+           require (modulesList[i], dir);
+           console.log(modulesList[i]+' was loaded');
         }
     });
 
-    dataSet.trigger('loadDefaultModules', core.config.defaultModules);
+     eventsEmitter.on('loadDefaultLibraries', function (librariesList) {
+        if (typeof(librariesList)!= 'object') {
+            librariesList = {};
+            console.log('libraries list is not array');
+        }
+        console.log(typeof(librariesList));
+        var dir = core.config.librariesDir, i, max = librariesList.length;
+        for (i = 0; i<max; i++) {
+           require (librariesList[i], dir);
+           console.log(librariesList[i]+' was loaded');
+        }
+     });
+
+     eventsEmitter.on('loadModule', function (name) {
+         var dir = core.config.modulesDir;
+           require (name, dir);
+           console.log('Module '+name+' was loaded');
+     });
+     eventsEmitter.on('loadLibrary', function (name) {
+         var dir = core.config.librariesDir;
+           require (name, dir);
+           console.log('Library '+name+' was loaded');
+     });
+
+    eventsEmitter.trigger('loadDefaultModules', core.config.defaultModules);
+    eventsEmitter.trigger('loadDefaultLibraries', core.config.defaultLibraries);
 }

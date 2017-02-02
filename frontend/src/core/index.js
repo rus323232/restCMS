@@ -1,19 +1,5 @@
 //require func for async modules load
 function require(name, modulesPath) {
-    function getScriptDir() {
-        var scriptSrc,
-            script_array = document.getElementsByTagName('script'),
-            script = script_array[script_array.length - 1];
-
-        if (script.getAttribute.length !== undefined) {
-            scriptSrc = script.src;
-        } else {
-            scriptSrc = script.getAttribute('src');
-        }
-
-        return scriptSrc.substr(0, scriptSrc.lastIndexOf('/') + 1);
-    }
-
     var code,
         module,
         exports,
@@ -93,8 +79,7 @@ var publisher = {
 }
 
 
-var dataSet = publisher,
-    configSet = {};
+var dataSet = publisher;
 
 //core initialization 
 var core = {
@@ -120,8 +105,19 @@ var core = {
 }
 
 window.onload = function () {
+    //first load core init
     core.init('src/configurations/core.json');
-    dataSet.on('loadModule', function (data) {
-        require (data, core.config.modulesDir);
+    dataSet.on('loadDefaultModules', function (modulesList) {
+        if (typeof(modulesList)!= 'object') {
+            modulesList = {};
+            console.log('Modules list is not array');
+        }
+        console.log(typeof(modulesList));
+        var dir = core.config.modulesDir, i, max = modulesList.length;
+        for (i = 0; i<max; i++) {
+           require (modulesList[i], core.config.modulesDir);
+        }
     });
+
+    dataSet.trigger('loadDefaultModules', core.config.defaultModules);
 }

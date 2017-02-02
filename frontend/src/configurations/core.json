@@ -1,5 +1,6 @@
 {
     "version" : "0.0.1",
     "modulesDir": "src/modules/",
-    "librariesDir": "src/libs/"
+    "librariesDir": "src/libs/",
+    "defaultModules" : ["router"]
 }

@@ -90,7 +90,7 @@ var eventsEmitter = publisher;
 var core = {
     config: {},
     init: function (configPath) {
-        var req = new XMLHttpRequest;
+        var req = new XMLHttpRequest, that = this;
 
         try  {
             req.open('GET', configPath, false);
@@ -105,50 +105,61 @@ var core = {
         catch (e) {
             console.log('Error with parse config file'+e);
         }
+
+        that.eventsInit();
+
+        eventsEmitter.trigger('loadDefaultModules', that.config.defaultModules);
+        eventsEmitter.trigger('loadDefaultLibraries', that.config.defaultLibraries);
+    },
+    eventsInit: function () {
+            var that = this;
+            eventsEmitter.on('loadDefaultModules', function (modulesList) {
+                    if (typeof(modulesList)!= 'object') {
+                        modulesList = {};
+                        console.log('Modules list is not array');
+                    }
+                    console.log(typeof(modulesList));
+                    var dir = that.config.modulesDir, i, max = modulesList.length;
+                    for (i = 0; i<max; i++) {
+                    require (modulesList[i], dir);
+                    console.log(modulesList[i]+' was loaded');
+                    }
+                });
+
+                eventsEmitter.on('loadDefaultLibraries', function (librariesList) {
+                    if (typeof(librariesList)!= 'object') {
+                        librariesList = {};
+                        console.log('libraries list is not array');
+                    }
+                    var dir = that.librariesDir, i, max = librariesList.length;
+                    for (i = 0; i<max; i++) {
+                    require (librariesList[i], dir);
+                    console.log(librariesList[i]+' was loaded');
+                    }
+                });
+
+                eventsEmitter.on('loadModule', function (name) {
+                    var dir = that.config.modulesDir;
+                    require (name, dir);
+                    console.log('Module '+name+' was loaded');
+                });
+                eventsEmitter.on('loadLibrary', function (name) {
+                    var dir = that.config.librariesDir;
+                    require (name, dir);
+                    console.log('Library '+name+' was loaded');
+                });
+    },
+    loadModule: function (name) {
+        eventsEmitter.trigger('loadModule', name);
+    },
+    loadLibrary: function (name) {
+        eventsEmitter.trigger('loadLibrary', name);
     }
+
     
 }
 
 window.onload = function () {
     //first load core init
     core.init('src/configurations/core.json');
-    eventsEmitter.on('loadDefaultModules', function (modulesList) {
-        if (typeof(modulesList)!= 'object') {
-            modulesList = {};
-            console.log('Modules list is not array');
-        }
-        console.log(typeof(modulesList));
-        var dir = core.config.modulesDir, i, max = modulesList.length;
-        for (i = 0; i<max; i++) {
-           require (modulesList[i], dir);
-           console.log(modulesList[i]+' was loaded');
-        }
-    });
-
-     eventsEmitter.on('loadDefaultLibraries', function (librariesList) {
-        if (typeof(librariesList)!= 'object') {
-            librariesList = {};
-            console.log('libraries list is not array');
-        }
-        console.log(typeof(librariesList));
-        var dir = core.config.librariesDir, i, max = librariesList.length;
-        for (i = 0; i<max; i++) {
-           require (librariesList[i], dir);
-           console.log(librariesList[i]+' was loaded');
-        }
-     });
-
-     eventsEmitter.on('loadModule', function (name) {
-         var dir = core.config.modulesDir;
-           require (name, dir);
-           console.log('Module '+name+' was loaded');
-     });
-     eventsEmitter.on('loadLibrary', function (name) {
-         var dir = core.config.librariesDir;
-           require (name, dir);
-           console.log('Library '+name+' was loaded');
-     });
-
-    eventsEmitter.trigger('loadDefaultModules', core.config.defaultModules);
-    eventsEmitter.trigger('loadDefaultLibraries', core.config.defaultLibraries);
 }

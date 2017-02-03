@@ -10,7 +10,7 @@ function require(name, modulesPath) {
         }
 
         if (name in require.cache) {
-            eventsEmitter.trigger(name+'Loaded', true);
+            eventsEmitter.trigger(name.substring(0, name.length - 3)+'Loaded', false);
             return require.cache[name];
         }
         try {
@@ -29,9 +29,8 @@ function require(name, modulesPath) {
             }
         }
         catch (e) {
-            console.log('Requires object does not exist: require func'+ e);
+            console.log('Requires object does not exist | require func| => '+ e);
         }
-    
 }
 
 require.cache = Object.create(null);
@@ -113,45 +112,45 @@ var core = {
         that.eventsInit();
 
         eventsEmitter.trigger('loadDefaultModules', that.config.defaultModules);
-        eventsEmitter.trigger('loadDefaultLibraries', that.config.defaultLibraries);
-    },
+        //eventsEmitter.trigger('loadDefaultLibraries', that.config.defaultLibraries); not completed|
+        },
     eventsInit: function () {
-            var that = this;
-            eventsEmitter.on('loadDefaultModules', function (modulesList) {
-                    if (typeof(modulesList)!= 'object') {
-                        modulesList = {};
-                        console.log('Modules list is not array');
-                    }
-                    var dir = that.config.modulesDir, i, max = modulesList.length;
-                    for (i = 0; i<max; i++) {
-                        that.modules[modulesList[i]] = require(modulesList[i], dir);
-                        console.log(modulesList[i]+' was loaded');
-                    }
-                });
+        var that = this;
+        eventsEmitter.on('loadDefaultModules', function (modulesList) {
+                if (typeof(modulesList)!= 'object') {
+                    modulesList = {};
+                    console.log('Modules list is not array');
+                }
+                var dir = that.config.modulesDir, i, max = modulesList.length;
+                for (i = 0; i<max; i++) {
+                    that.modules[modulesList[i]] = require(modulesList[i], dir);
+                    console.log(modulesList[i]+' was loaded');
+                }
+            });
+            //
+            eventsEmitter.on('loadDefaultLibraries', function (librariesList) {
+                if (typeof(librariesList)!= 'object') {
+                    librariesList = {};
+                    console.log('libraries list is not array');
+                }
+                var dir = that.librariesDir, i, max = librariesList.length;
+                for (i = 0; i<max; i++) {
+                require (librariesList[i], dir);
+                
+                console.log(librariesList[i]+' was loaded');
+                }
+            });
 
-                eventsEmitter.on('loadDefaultLibraries', function (librariesList) {
-                    if (typeof(librariesList)!= 'object') {
-                        librariesList = {};
-                        console.log('libraries list is not array');
-                    }
-                    var dir = that.librariesDir, i, max = librariesList.length;
-                    for (i = 0; i<max; i++) {
-                    require (librariesList[i], dir);
-                   
-                    console.log(librariesList[i]+' was loaded');
-                    }
-                });
-
-                eventsEmitter.on('loadModule', function (name) {
-                    var dir = that.config.modulesDir;
-                    that.modules[name] = require(name, dir);
-                    console.log('Module '+name+' was loaded');
-                });
-                eventsEmitter.on('loadLibrary', function (name) {
-                    var dir = that.config.librariesDir;
-                    require (name, dir);
-                    console.log('Library '+name+' was loaded');
-                });
+            eventsEmitter.on('loadModule', function (name) {
+                var dir = that.config.modulesDir;
+                that.modules[name] = require(name, dir);
+                console.log('Module '+name+' was loaded');
+            });
+            eventsEmitter.on('loadLibrary', function (name) {
+                var dir = that.config.librariesDir;
+                require (name, dir);
+                console.log('Library '+name+' was loaded');
+            });
     },
     loadModule: function (name) {
         eventsEmitter.trigger('loadModule', name);
@@ -159,7 +158,6 @@ var core = {
     loadLibrary: function (name) {
         eventsEmitter.trigger('loadLibrary', name);
     }
-    
 }
 
 window.onload = function () {

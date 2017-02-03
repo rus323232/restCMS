@@ -1,3 +1,9 @@
-core.loadModule('serializer');
+var router = {
+    init: function (url) {
 
-core.modules.serializer.bar();
+    },
+    
+
+} 
+
+module.exports = router;

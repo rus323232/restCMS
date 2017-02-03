@@ -2,6 +2,6 @@
     "version" : "0.0.1",
     "modulesDir": "src/modules/",
     "librariesDir": "src/libs/",
-    "defaultModules" : ["router", "DOMHandler", "serverRequest"],
+    "defaultModules" : ["URLHandler", "DOMHandler", "serverRequest"],
     "defaultLibraries": [""]
 }

@@ -10,6 +10,7 @@ function require(name, modulesPath) {
         }
 
         if (name in require.cache) {
+            eventsEmitter.trigger(name+'Loaded', true);
             return require.cache[name];
         }
         try {
@@ -23,6 +24,7 @@ function require(name, modulesPath) {
                 module = { exports: exports };
                 code(exports, module);
                 require.cache[name] = module.exports;
+                eventsEmitter.trigger(name.substring(0, name.length - 3)+'Loaded', true);
                 return module.exports;
             }
         }
@@ -89,6 +91,8 @@ var eventsEmitter = publisher;
 //core initialization 
 var core = {
     config: {},
+    modules: {},
+    libraries: {},
     init: function (configPath) {
         var req = new XMLHttpRequest, that = this;
 
@@ -118,11 +122,10 @@ var core = {
                         modulesList = {};
                         console.log('Modules list is not array');
                     }
-                    console.log(typeof(modulesList));
                     var dir = that.config.modulesDir, i, max = modulesList.length;
                     for (i = 0; i<max; i++) {
-                    require (modulesList[i], dir);
-                    console.log(modulesList[i]+' was loaded');
+                        that.modules[modulesList[i]] = require(modulesList[i], dir);
+                        console.log(modulesList[i]+' was loaded');
                     }
                 });
 
@@ -134,13 +137,14 @@ var core = {
                     var dir = that.librariesDir, i, max = librariesList.length;
                     for (i = 0; i<max; i++) {
                     require (librariesList[i], dir);
+                   
                     console.log(librariesList[i]+' was loaded');
                     }
                 });
 
                 eventsEmitter.on('loadModule', function (name) {
                     var dir = that.config.modulesDir;
-                    require (name, dir);
+                    that.modules[name] = require(name, dir);
                     console.log('Module '+name+' was loaded');
                 });
                 eventsEmitter.on('loadLibrary', function (name) {
@@ -155,7 +159,6 @@ var core = {
     loadLibrary: function (name) {
         eventsEmitter.trigger('loadLibrary', name);
     }
-
     
 }
 

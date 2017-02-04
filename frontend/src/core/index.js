@@ -106,7 +106,7 @@ var core = {
             }
         }
         catch (e) {
-            console.log('Error with parse config file'+e);
+            console.log('Error with parse config file | => '+e);
         }
 
         that.eventsInit();

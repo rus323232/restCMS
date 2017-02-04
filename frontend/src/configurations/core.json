@@ -1,7 +1,12 @@
 {
     "version" : "0.0.1",
     "modulesDir": "src/modules/",
-    "librariesDir": "src/libs/",
-    "defaultModules" : ["URLHandler", "DOMHandler", "serverRequest"],
-    "defaultLibraries": [""]
+    "librariesDir": "libs/",
+    "defaultModules" : ["router","URLHandler", "DOMHandler", "serverRequest"],
+    "defaultLibraries": [""],
+    "API": {
+        "scheme": "http",
+        "adress": "localhost",
+        "port"  : "8080"
+    }
 }

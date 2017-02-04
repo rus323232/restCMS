@@ -23,7 +23,7 @@ var router = {
         var that = this;
         eventsEmitter.on('URLChange', function (data) {
              that.init(data);
-             eventsEmitter.trigger('sendRequest', that.queryParams);
+            /* eventsEmitter.trigger('sendRequest', that.queryParams);*/
         });
     }
 } 

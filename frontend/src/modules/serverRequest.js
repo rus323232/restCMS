@@ -38,7 +38,7 @@ var serverRequest = {
             that.init();
         });
         eventsEmitter.on('sendRequest', function (a) {
-            that.send(a[0]);
+            that.send(a);
         });
     },
     facade: {}

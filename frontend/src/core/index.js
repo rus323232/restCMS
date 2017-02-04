@@ -112,7 +112,7 @@ var core = {
         that.eventsInit();
 
         eventsEmitter.trigger('loadDefaultModules', that.config.defaultModules);
-        //eventsEmitter.trigger('loadDefaultLibraries', that.config.defaultLibraries); not completed|
+        //eventsEmitter.trigger('loadDefaultLibraries', that.config.defaultLibraries); not completed
         },
     eventsInit: function () {
         var that = this;
@@ -159,8 +159,5 @@ var core = {
         eventsEmitter.trigger('loadLibrary', name);
     }
 }
-
-window.onload = function () {
-    //first load core init
-    core.init('src/configurations/core.json');
-}
+//first load core init
+core.init('src/configurations/core.json');

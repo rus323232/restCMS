@@ -30,15 +30,19 @@ var URLHandler = {
         eventsEmitter.on('URLHandlerLoaded', function () {
             that.init();
         });
-        window.addEventListener('hashchange', function () {
+        eventsEmitter.on('URLChange', function () {
+            that.init();
+        });
+     /*   window.addEventListener('hashchange', function () {
             that.init();
             eventsEmitter.trigger('URLChange', that.detailURL);
         }, false);
         document.addEventListener('onload', function () {
             that.init();
             eventsEmitter.trigger('URLChange', that.detailURL);
-        }, false);
-    }
+        }, false);*/
+    },
+    facade: {}
 } 
 
 URLHandler.eventsInit();

@@ -117,9 +117,9 @@ var core = {
     eventsInit: function () {
         var that = this;
         eventsEmitter.on('loadDefaultModules', function (modulesList) {
-                if (typeof(modulesList)!= 'object') {
+                if (typeof(modulesList) != 'object') {
                     modulesList = {};
-                    console.log('Modules list is not array');
+                    console.log('Modules list is not object');
                 }
                 var dir = that.config.modulesDir, i, max = modulesList.length;
                 for (i = 0; i<max; i++) {
@@ -129,7 +129,7 @@ var core = {
             });
             //
             eventsEmitter.on('loadDefaultLibraries', function (librariesList) {
-                if (typeof(librariesList)!= 'object') {
+                if (typeof(librariesList) != 'object') {
                     librariesList = {};
                     console.log('libraries list is not array');
                 }
@@ -161,3 +161,4 @@ var core = {
 }
 //first load core init
 core.init('src/configurations/core.json');
+core.modules.eventsRegistrator.start();

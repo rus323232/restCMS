@@ -84,7 +84,6 @@ var publisher = {
         }
 }
 
-
 var eventsEmitter = publisher;
 
 //core initialization 
@@ -157,8 +156,17 @@ var core = {
     },
     loadLibrary: function (name) {
         eventsEmitter.trigger('loadLibrary', name);
+    },
+    event: function (e, d) {
+        var data = {} || d;
+        if (e in eventsEmitter.subscribers) {
+            eventsEmitter.trigger(e, data);
+        } else {
+            console.log('set core event not exist');
+        }
     }
 }
 //first load core init
-core.init('src/configurations/core.json');
-core.modules.eventsRegistrator.start();
+core.init('../src/configurations/core.json');
+
+core.event('firstLoad');

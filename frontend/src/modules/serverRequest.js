@@ -1,49 +1,47 @@
+//temporary use jquery for simple CRUR queries
+
 var serverRequest = {
     API: {},
     init: function () {
         this.API.adress = core.config.API.adress;
-        this.API.port   = core.config.API.port;
-        this.API.scheme = core.config.API.scheme;
     },
     send: function (requestData) {
         var method = requestData.method,
-            query  = requestData.params,
-            adress = this.API.adress,
-            port   = this.API.port,
-            scheme = this.API.scheme,
+            query  = requestData.values,
+            url    = 'id' in requestData ? this.API.adress + requestData.id : this.API.adress,
             req    = new XMLHttpRequest,
             url,
             that = this;
-        url = scheme + '://'+adress+':'+port;
-        console.dir(requestData);
 
-        try  {
-            req.open(method, url, false);
-            req.send(query);
-
-            if (req.status === 200) {
-                var answer = req.responseText,
-                    data = JSON.parse(answer);
+        $.ajax({
+            url: url,
+            type: method,
+            dataType: "JSON",
+            async: false,
+            data: query,
+            success: function (data) {
                 console.dir(data);
-                return data;
+                console.log(typeof (data))
+                eventsEmitter.trigger('dataLoaded', data);
             }
-        }
-        catch (e) {
-            console.log('Error with server request | => '+e);
-        }
+        }).fail(function () {
+            throw ('Error with getting JSON object');
+        });
     },
     eventsInit: function () {
         var that = this;
         eventsEmitter.on('serverRequestLoaded', function () {
             that.init();
         });
-        eventsEmitter.on('sendRequest', function (a) {
-            that.send(a);
+        eventsEmitter.on('sendRequest', function (d) {
+            that.send(d);
         });
     },
-    facade: {}
+    facade: {
+        request: this.API
+    }
 }
 
 serverRequest.eventsInit();
 
-module.exports = serverRequest;
+module.exports = serverRequest.facade;

@@ -1,19 +1,25 @@
 var router = {
     queryParams: [],
-    init: function (url) {
-        if (typeof(url) != 'object' || url.length < 1) {
-            throw 'router.js | incoming arg must be object |';
-        }
-        this.buildQuery(url);
+    init: function () {
+    },
+    firstLoad: function () {
+        var query = {
+                    "method": "GET",
+                    "values": {
+                        "type"  : "page",
+                        "name"  : "home"
+                     }
+        };
+        this.queryParams.push(query);
     },
     buildQuery: function (data) {
         var that = this, query = {};
         if ((data.script === "index.html") || (data.script === "")) {
             query = {
-                'method': 'GET',
-                'params': {
-                    'type'  : 'page',
-                    'name'  : 'home'
+                "method": "GET",
+                "values": {
+                    "type"  : "page",
+                    "name"  : "home"
                 }
             } 
             that.queryParams.push(query);
@@ -22,8 +28,11 @@ var router = {
     eventsInit: function () {
         var that = this;
         eventsEmitter.on('URLChange', function (data) {
-             that.init(data);
-            /* eventsEmitter.trigger('sendRequest', that.queryParams);*/
+
+        });
+         eventsEmitter.on('firstLoad', function (data) {
+             that.firstLoad();
+             eventsEmitter.trigger('sendRequest', that.queryParams[0]);
         });
     }
 } 

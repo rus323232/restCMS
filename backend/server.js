@@ -6,6 +6,7 @@ var mongoOp     =   require("./mongo");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({"extended" : false}));
+app.use(express.static('../frontend'));
 
 router.get("/",function(req,res){
     res.json({"error" : false,"message" : "send api/"});
@@ -13,9 +14,14 @@ router.get("/",function(req,res){
 
 router.route("/api/object")
     .get(function(req,res){
-        var response = {};
+        var response = {},
+            search    = {
+                "values.name" : req.query.name,
+                "values.type" : req.query.type
+            }
+         console.dir(search);
       
-        mongoOp.find({},function(err,data){
+        mongoOp.find(search, function(err,data){
         // Mongo command to fetch all data from collection.
             if(err) {
                 response = {"error" : true,"message" : "Error fetching data"};
@@ -47,9 +53,9 @@ router.route("/api/object")
             if(err) {
                 response = {"error" : true,"message" : "Error fetching data"};
             } else {
-                response = {"error" : false,"message" : data};
+                response = data;
             }
-            res.json(response);
+            res.json(data);
         });
     })
     .put(function(req,res){

@@ -1,12 +1,10 @@
 {
     "version" : "0.0.1",
-    "modulesDir": "src/modules/",
+    "modulesDir": "../src/modules/",
     "librariesDir": "libs/",
     "defaultModules" : ["router","URLHandler", "DOMHandler", "serverRequest"],
     "defaultLibraries": [""],
     "API": {
-        "scheme": "http",
-        "adress": "localhost",
-        "port"  : "8080"
+        "adress": "http://localhost:3000/api/object/"
     }
 }

@@ -21,7 +21,6 @@ var serverRequest = {
             data: query,
             success: function (data) {
                 console.dir(data);
-                console.log(typeof (data))
                 eventsEmitter.trigger('dataLoaded', data);
             }
         }).fail(function () {

@@ -7,22 +7,48 @@ var DOMHandler = {
         this._viewer = core.modules.viewer;
     },
     parseObjects: function () {
-        var cpStore = [],
-            cpSelector = $('.sc-object'),
-            answer = [];
-    
-        for (let i = 0, max = cpSelector.length; i < max; i++) {
-            if (cpSelector.eq(i).attr('parsed') === "false") {
-                cpStore[i] = [];
-                var currentObjectId = cpSelector.eq(i).attr('data-object-id');
-                cpStore[i] = {
-                    id: currentObjectId
+        var that = this;
+        cpSelector = $('.sc-object[parsed="false"]');
+        if(cpSelector.length === 0) {
+            return false;
+        }
+        for (var i = 0, max = cpSelector.length; i < max; i++) {
+                if (cpSelector.eq(i).attr('parsed') === "false") {
+                    switch ((cpSelector.eq(i).attr('collection') !== undefined)&&(cpSelector.eq(i).attr('collection') !== false)) {
+                        case true:
+                            that._parseByName(cpSelector.eq(i));
+                            break;
+                        case false:
+                            that._parseByID(cpSelector.eq(i))
+                    }
                 }
-                cpStore[i].method = "GET";
-                eventsEmitter.trigger('sendRequest', cpStore[i]);
-                cpSelector.eq(i).attr('parsed','true');
+            }
+        eventsEmitter.trigger('pageReady');
+    },
+    _parseByID: function (o) {
+        var cpStore;
+        var currentObjectId = o.attr('data-object-id');
+        cpStore = {
+            id: currentObjectId
+        }
+        cpStore.method = "GET";
+        eventsEmitter.trigger('sendRequest', cpStore);
+        o.attr('parsed','true');
+    },
+    _parseByName: function (o) {
+        var cpStore;
+        var currentObjectName = o.attr('data-object-name');
+        var currentObjectType = o.attr('data-object-type');
+        cpStore= {
+            values: {
+                name: currentObjectName,
+                type: currentObjectType
             }
         }
+        cpStore.method = "GET";
+      
+        eventsEmitter.trigger('sendRequest', cpStore);
+        o.attr('parsed','true');
     },
     renderObject: function (data) {
        var i, max = data.length, object;

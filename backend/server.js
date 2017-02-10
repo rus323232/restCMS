@@ -59,23 +59,13 @@ router.route("/api/object")
         });
     })
     .put(function(req,res){
-        var response = {};
-        mongoOp.findById(req.params.id,function(err,data){
-            if(err) {
-                response = {"error" : true,"message" : "Error fetching data"};
-            } else {
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                }
-                data.save(function(err){
-                    if(err) {
-                        response = {"error" : true,"message" : "Error updating data"};
-                    } else {
-                        response = {"error" : false,"message" : "Data is updated for "+req.params.id};
-                    }
-                    res.json(response);
-                });
-            })
-        })
+        var query = {'_id': req.params.id};
+        
+        mongoOp.findOneAndUpdate(query,  {$set:{'values.content.shortText':req.body.shortText}}, {new: true}, function(err, doc){
+            if (err) return res.send(500, { error: err });
+            return res.json("succesfully saved");
+        });
+    })
     .delete(function(req,res){
         var response = {};
         mongoOp.findById(req.params.id,function(err,data){

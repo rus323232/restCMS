@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактирование статей</title>
+    <link rel="stylesheet" href="libs/css/bootstrap-theme.css">
+    <link rel="stylesheet" href="libs/css/bootstrap.css">
+    <script src="../../libs/jquery-3.0.0.min.js"></script>
+    <script src="libs/js/bootstrap.js"></script>
+    <script src="libs/tinymce/tinymce.min.js"></script>
+    <style>
+       .news-list a {
+           text-align: left;
+           width: 50%;
+       }
+       .news-list span.count {
+           text-align: left;
+       }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                  <h1 style="text-align: center"> Список статей</h1>
+                  <div class="list-group news-list ">
+                       
+                    </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 ">
+                <div class="editor-container">
+                     <textarea></textarea>
+                    <button type="submit">Изменить запись</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    tinymce.init({ selector:'textarea' });
+    var news = {}, changeableNewsId = '';
+
+    var send = function (requestData) {
+        var method = requestData.method,
+            query  = requestData.values,
+            url    = 'id' in requestData ? 'http://localhost:3000/api/object/' + requestData.id : 'http://localhost:3000/api/object/',
+            req    =  new XMLHttpRequest;
+
+        $.ajax({
+            url: url,
+            type: method,
+            dataType: "JSON",
+            async: false,
+            data: query,
+            success: buildNewsList
+        }).fail(function (e) {
+            console.log(e);
+            throw ('Error with getting JSON object');
+        });
+    }
+    var buildNewsList = function (data) {
+        var item = '';
+        for (var i = 0; i<data.length; i++) {
+            item += '<a style="cursor: pointer" class="list-group-item">'
+            item += '<span class="count">'+(i+1)+' | </span>'+data[i].values.content.title;
+            item += '<span style="visibility: hidden; position: absolute" class="id">'+data[i]._id+'</span>';
+            item += '<span style="visibility: hidden; position: absolute" class="text">'+data[i].values.content.shortText+'</span>';
+            item += '</a>';
+        } 
+        news = data;
+        $('.news-list').html(item);
+    }
+    var newsQuery = {
+            "method": "GET",
+            "values": {
+                "type"  : "block",
+                "name"  : "newsItem"
+            }
+        } 
+    send(newsQuery);
+
+    $('a').click(function () {
+        var text = $(this).children('.text').text();
+        console.log(text);
+        changeableNewsId = $(this).children('.id').text()
+        console.log(changeableNewsId)
+        tinymce.activeEditor.setContent(text);
+    });
+
+    $('button').click(function (){
+        var text = tinymce.activeEditor.getContent();
+        $.ajax({
+            url: 'http://localhost:3000/api/object/'+changeableNewsId,
+            type: 'PUT',
+            dataType: "JSON",
+            async: false,
+            data: {
+                shortText: text
+            },
+            success: function () {
+                alert('Содержание статьи изменено');
+            }
+        });
+    }) 
+</script>
+<style>
+
+</style>
+</body>
+</html>

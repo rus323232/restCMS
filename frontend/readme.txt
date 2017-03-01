@@ -1,9 +1,5 @@
-mongobd server : localhost:27017
-        collection: restCMS
+mongodb server : localhost:27017
+collection: restCMS
 node server: localhost: 3000
-
-!!!!!
-скрипт карусель добавляется по тупому методу,
-инициализация плагинов не происходит в нужный момент так как скрипт описывающий их поведение загружается раньше чем элементы которые их содержат
 
 
